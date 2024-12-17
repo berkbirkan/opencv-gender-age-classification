@@ -6,6 +6,4 @@ services:
     container_name: opencv_gender_age_app
     ports:
       - "8501:8501"
-    volumes:
-      - .:/app  # Proje dizinini konteyner içine bağlar
     restart: unless-stopped
