@@ -93,6 +93,39 @@ def process_video(faceNet, ageNet, genderNet):
 
     video.release()
 
+def process_image_from_array(image, faceNet, ageNet, genderNet):
+    MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
+    ageList = ['(0-2)', '(4-6)', '(8-12)', '(15-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
+    genderList = ['Male', 'Female']
+
+    padding = 20
+    resultImg, faceBoxes = highlightFace(faceNet, image)
+    if not faceBoxes:
+        st.write("No face detected")
+        return
+
+    for faceBox in faceBoxes:
+        face = image[max(0, faceBox[1] - padding):
+                     min(faceBox[3] + padding, image.shape[0] - 1), max(0, faceBox[0] - padding):
+                     min(faceBox[2] + padding, image.shape[1] - 1)]
+
+        blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), MODEL_MEAN_VALUES, swapRB=False)
+        genderNet.setInput(blob)
+        genderPreds = genderNet.forward()
+        gender = genderList[genderPreds[0].argmax()]
+
+        ageNet.setInput(blob)
+        agePreds = ageNet.forward()
+        age = ageList[agePreds[0].argmax()]
+
+        cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1] - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2, cv2.LINE_AA)
+    
+    # BGR to RGB conversion for Streamlit display
+    resultImg = cv2.cvtColor(resultImg, cv2.COLOR_BGR2RGB)
+    st.image(resultImg, channels="RGB", caption="Processed Image")
+
+
 def capture_and_process_image(faceNet, ageNet, genderNet):
     padding = 20
     camera = cv2.VideoCapture(0)
@@ -152,10 +185,15 @@ def main():
             process_image(image_path, faceNet, ageNet, genderNet)
 
     elif option == "Live Camera":
-        process_video(faceNet, ageNet, genderNet)
+        st.write("Use 'Capture Photo' option to take live snapshots from your camera.")
 
     elif option == "Capture Photo":
-        capture_and_process_image(faceNet, ageNet, genderNet)
+        img_file_buffer = st.camera_input("Take a photo using your camera")
+        if img_file_buffer is not None:
+            image = np.array(bytearray(img_file_buffer.read()), dtype=np.uint8)
+            image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+            process_image_from_array(image, faceNet, ageNet, genderNet)
+
 
 if __name__ == "__main__":
     main()
