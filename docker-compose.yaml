@@ -7,5 +7,5 @@ services:
     ports:
       - "8501:8501"
     volumes:
-      - .:/app  # Bağlantı: Tüm proje dizini
+      - .:/app  # Proje dizinini konteyner içine bağlar
     restart: unless-stopped
