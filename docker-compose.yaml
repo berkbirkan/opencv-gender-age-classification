@@ -1,12 +1,11 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  streamlit-app:
+  opencv-gender-age-app:
     build: .
+    container_name: opencv_gender_age_app
     ports:
-      - "4785:8501"  # 4785 portu dışarıya açılır, Streamlit varsayılan olarak 8501'de çalışacak
-    environment:
-      - PYTHONUNBUFFERED=1  # Python çıkışlarının tamponlanmasını devre dışı bırakmak için
+      - "8501:8501"  # Map host port to container port
     volumes:
-      - .:/app  # Proje dosyalarını konteynere bağlamak için
-    restart: unless-stopped  # Konteyner durursa, yeniden başlatılacak
+      - .:/app       # Mount the project directory
+    restart: unless-stopped
