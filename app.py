@@ -185,7 +185,7 @@ def main():
             process_image(image_path, faceNet, ageNet, genderNet)
 
     elif option == "Live Camera":
-        st.write("Use 'Capture Photo' option to take live snapshots from your camera.")
+        st.write("Our server has no camera so you cant use this option yet. Use 'Capture Photo' option to take live snapshots from your camera.")
 
     elif option == "Capture Photo":
         img_file_buffer = st.camera_input("Take a photo using your camera")
