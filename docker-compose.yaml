@@ -1,11 +1,11 @@
 version: "3.8"
 
 services:
-  opencv-gender-age-app:
+  opencv-gender-age:
     build: .
     container_name: opencv_gender_age_app
     ports:
-      - "8501:8501"  # Map host port to container port
+      - "8501:8501"
     volumes:
-      - .:/app       # Mount the project directory
+      - .:/app  # Bağlantı: Tüm proje dizini
     restart: unless-stopped
